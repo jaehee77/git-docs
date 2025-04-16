@@ -19,6 +19,7 @@ git config --global user.email
 
 ```bash
 git config --global init.defaultBranch main
+git branch -M main
 ```
 
 ### .gitignore 작성
@@ -50,4 +51,17 @@ logs/*.c
 
 # logs 폴더 바로 안, 또는 그 안의 다른 폴더(들) 안의 debug.log
 logs/**/debug.log
+```
+
+### Vim 입력 모드
+
+![Vim 모드 작업](./images/vim.png)
+
+### Git 기본 명령어
+
+```bash
+git status
+git commit -m "FIRST COMMIT"
+git log
+git diff
 ```
