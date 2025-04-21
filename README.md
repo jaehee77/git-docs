@@ -426,3 +426,245 @@ git config --global alias.cam "commit -am"
 ```
 
 [깃 단축키 설정](https://git-scm.com/book/ko/v2/Git%EC%9D%98-%EA%B8%B0%EC%B4%88-Git-Alias)
+
+<br>
+<br>
+
+---
+
+### `git stash`
+
+- 커밋하기 애매한 변화를 잠시 치워두기
+
+```bash
+git stash
+
+# 원하는 시점, 브랜치에서 다시 적용
+git stash pop
+
+# 원하는 것만 stash 해보기
+# hunk(덩어리)별로 선택하여 stash
+git stash -p
+
+# 메시지와 함께 스태시하기
+git stash -m 'Add Stash3'
+
+# 스태시 목록 보기
+git stash list
+
+# 치워둔 마지막 항목(번호 없을 시) 적용
+git stash apply
+# 치워둔 번호가 있을 시 번호로 적용하기
+git stash apply stash@{1}
+
+# 치워둔 마지막 항목(번호 없을 시) 삭제
+git stash drop
+# 치워둔 번호가 있을 시 번호로 삭제하기
+git stash drop stash@{1}
+
+# 치워둔 마지막 항목(번호 없을 시) 적용 및 삭제(apply + drop)
+git stash pop
+
+# 새 브랜치를 생성하여 pop(충돌사항이 있는 상황 등에 유용)
+git stash branch (브랜치명)
+
+# 치워둔 모든 항목들 비우기
+git stash clear
+
+```
+
+### `git commit --amend` 깃 수정하기
+
+```bash
+git commit --amend
+
+# 커밋 메시지 한 줄로 변경
+git commit --amend -m 'Add members to Panthers and Pumas'
+```
+
+<br>
+<br>
+
+---
+
+### 과거의 커밋들을 수정, 삭제, 병합, 분할하기
+
+```bash
+# 수행하고자 하는 대상 커밋의 바로 이전 커밋의 해쉬값을 작성
+git rebase -i (커밋해쉬)
+
+```
+
+| 명령어    | 설명               |
+| --------- | ------------------ |
+| p,pick    | 커밋 그대로 두기   |
+| r, reword | 커밋 메시지 변경   |
+| e, edit   | 수정울 위해 정지   |
+| d, drop   | 커밋 삭제          |
+| s, squash | 이전 커밋에 합치기 |
+
+- e 명령어로 수정 시작
+- git reset HEAD~
+- 변화들을 따로 스테이지 및 커밋
+- git rebase --continue
+
+<br>
+<br>
+
+### 관리되지 않는 파일들 삭제하기 : `git clean`
+
+- Git에서 추적하지 않는 파일들 삭제
+
+| 옵션 | 설명                                 |
+| ---- | ------------------------------------ |
+| -n   | 삭제될 파일들 보여주기               |
+| -d   | 폴더 포함                            |
+| -i   | 인터렉티브 모드로 시작               |
+| -f   | 강제로 지워버리기                    |
+| -x   | ⚠️ .gitignore에 등록된 파일들도 삭제 |
+
+> 위의 옵션들을 조합하여 사용가능
+
+```bash
+#  흔히 쓰이는 조합:
+git clean -df
+```
+
+<br>
+<br>
+
+### 커밋하지 않은 사항 되돌리기 `git restore`
+
+- 특정 파일을 지정된 상태로 복구
+
+```bash
+# 워킹 디렉토리의 특정 파일 복구
+git restore (파일명)
+
+# 파일명 자리에 . : 모든 파일 복구
+git restore .
+
+# 변경상태를 스테이지에서 워킹 디렉토리로 돌려놓기
+git restore --staged (파일명)
+git restore --staged .
+
+# 파일을 특정 커밋의 상태로 되돌리기
+git restore --source=(헤드 또는 커밋 해시) 파일명
+```
+
+### reset을 했어도 복구할 수 있다.
+
+- reflog는 프로젝트가 위치한 커밋이 바뀔 때마다 기록되는 내역을 보여주고 이를 사용하여 reset하기 이전 시점으로 프로젝트를 복구할 수 있다
+
+```bash
+# 해쉬를 확인한 후..
+git reflog
+
+git reset --hard 827e75f
+```
+
+<br>
+<br>
+
+---
+
+### 커밋에 🏷️ 태그 달기
+
+- 특정 시점을 키워드로 저장하고 싶을 때
+- 커밋에 버전 정보를 붙이고자 할 때
+
+```bash
+# 마지막 커밋에 태그 달기
+git tag v2.0.0
+
+# 현존하는 태그 확인
+git tag
+
+# 원하는 커밋에 태그 달기
+git tag (태그명) (커밋 해시) -m (메시지)
+
+# 원하는 태그의 내용 확인
+git show v2.0.0
+
+# 태그 삭제
+git tag -d v2.0.0
+
+# 마지막 커밋에 태그 달기 (annotated)
+git tag -a v2.0.0
+
+# 입력 후 메시지 작성 또는
+git tag v2.0.0 -m '자진모리 버전'
+
+# 원하는 패턴으로 필터링하기
+git tag -l 'v1.*'
+
+# 원하는 버전으로 체크아웃
+git checkout v1.2.1
+
+```
+
+### 원격 저장소의 🏷️ 태그와 릴리즈
+
+```bash
+# 원격에 태그 동기화
+# 특정 태그 원격에 올리기
+git push (원격명) (태그명)
+git push origin v1.0.0
+
+# 특정 태그 원격에서 삭제
+git push --delete (원격명) (태그명)
+
+# 로컬의 모든 태그 원격에 올리기
+git push --tags
+
+```
+
+#### `GitHub의 release`
+
+- 다운로드 가능한 배포판 기능하다.
+
+<br>
+<br>
+
+### 다른 브랜치에서 원하는 🍒 커밋만 따오기
+
+![cherry-pick](./images/cherry.png)
+
+- 다른 브랜치의 원하는 커밋 가져오기
+
+```bash
+# Cherry 커밋 main 브랜치로 가져오기
+# main 브랜치에서 실행
+git cherry-pick (체리의 해시)
+```
+
+### 다른 가지의 잔가지만 가져오기 `rebase -onto` 옵션
+
+```bash
+# 다른 브랜치에서 파생된 브랜치 옮겨 붙이기
+# fruit 브랜치에서 파생된 citrus 브랜치를 main 브랜치로 옮겨붙이기
+git rebase --onto (도착 브랜치) (출발 브랜치) (이동할 브랜치)
+# 도착브랜치로 이(출발)브랜치에 있는 이브랜치를 옮겨 붙이겠다 !!!
+
+git rebase --onto main fruit citrus
+# citrus로 fast forward
+```
+
+### 다른 가지의 커밋들(마디들)을 묶어서 한 커밋으로 가져오기
+
+- 다른 커밋들을 하나의 커밋으로 묶어 가져오기
+
+```bash
+# 어느곳으로 머지하는지 그 해당 브랜치로 이동, main <- test(작업내용이 있는 브랜치)
+# main 브랜치로 이동 git merge --squash (대상 브랜치)
+git merge --squash test
+
+# 변경사항들 스테이지 되어 있음
+git status
+
+git commit -am '커밋 내용 작성'
+# or git commit 을 수행
+```
+
+- 일반 merge : A와 B 두 브랜치를 한 곳으로 이어붙임
+- merge --squash : B 브랜치의 마디들을 복사해다가 한 마디로 모아 A 브랜치에 붙임 (staged 상태로)
